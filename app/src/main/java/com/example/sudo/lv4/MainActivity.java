@@ -1,48 +1,54 @@
 package com.example.sudo.lv4;
 
-import android.graphics.Movie;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import okhttp3.OkHttpClient;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-public class MainActivity extends AppCompatActivity {
-
+    RecyclerView recyclerView;
     EditText etSearchTerm;
-    ImageButton bSearch;
-    ListView lvMovies;
+    ImageButton ibSearch;
+    Button bOsvježi;
 
+    String prazno  = "";
+    String category;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        this.setUpUi();
-        //this.hookUpListeners();
 
-        CitajRss citajRss = new CitajRss(this);
+        this.recyclerView = (RecyclerView) findViewById(R.id.rvNews);
+        this.etSearchTerm = (EditText) findViewById(R.id.etSearchTerm);
+        this.ibSearch = (ImageButton) findViewById(R.id.ibSearch);
+        this.bOsvježi = (Button) findViewById(R.id.bOsvježi);
+
+        CitajRss citajRss = new CitajRss(this, recyclerView, prazno);
         citajRss.execute();
+
+        bOsvježi.setOnClickListener(this);
+        ibSearch.setOnClickListener(this);
+
     }
 
-    private void setUpUi() {
-        this.bSearch = (ImageButton) this.findViewById(R.id.ibSearch);
-        this.etSearchTerm = (EditText) this.findViewById(R.id.etSearchTerm);
-        this.lvMovies = (ListView) this.findViewById(R.id.lvMovies);
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()){
+            case R.id.bOsvježi:
+                CitajRss citajRss = new CitajRss(this, recyclerView, prazno);
+                citajRss.execute();
+                break;
+            case R.id.ibSearch:
+                category = etSearchTerm.getText().toString();
+                CitajRss filter = new CitajRss(this, recyclerView, category);
+                filter.execute();
+                break;
+        }
     }
 }
